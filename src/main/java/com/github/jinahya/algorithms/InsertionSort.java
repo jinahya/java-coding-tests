@@ -6,7 +6,7 @@ import java.util.Objects;
 import java.util.concurrent.ThreadLocalRandom;
 
 /**
- * An interface for insertion-sorting arrays and collections.
+ * An interface for insertion-sort.
  *
  * @author Jin Kwon &lt;jin.kwon_at_meshkorea.net&gt;
  * @implSpec implementation classes should have a no-args constructor.
@@ -26,8 +26,6 @@ interface InsertionSort {
      * @throws IllegalArgumentException       if {@code fromIndex} is greater than {@code toIndex}.
      * @throws ArrayIndexOutOfBoundsException if {@code fromIndex} is less than {@code 0} or {@code toIndex} is greater
      *                                        than {@code array.length}.
-     * @implSpec implementation should be <a
-     * href="https://en.wikipedia.org/wiki/Sorting_algorithm#Stability">stable</a>
      */
     void sort(final int[] array, final int fromIndex, final int toIndex);
 
