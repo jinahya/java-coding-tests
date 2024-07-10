@@ -18,18 +18,18 @@
   </organization>
 
   <scm>
-    <connection>scm:git:git@github.com:meshkorea/${project.artifactId}.git</connection>
-    <developerConnection>scm:git:git@github.com:meshkorea/${project.artifactId}.git</developerConnection>
-    <url>https://github.com:meshkorea/${project.artifactId}</url>
+    <connection>scm:git:git@github.com:jinahya/${project.artifactId}.git</connection>
+    <developerConnection>scm:git:git@github.com:jinahya/${project.artifactId}.git</developerConnection>
+    <url>https://github.com:jinahya/${project.artifactId}</url>
     <tag>HEAD</tag>
   </scm>
   <issueManagement>
     <system>GitHub Issues</system>
-    <url>https://github.com/meshkorea/${project.artifactId}/issues</url>
+    <url>https://github.com/jinahya/${project.artifactId}/issues</url>
   </issueManagement>
   <ciManagement>
     <system>GitHub Actions</system>
-    <url>https://github.com/meshkorea/${project.artifactId}/actions/workflows/maven.yml</url>
+    <url>https://github.com/jinahya/${project.artifactId}/actions/workflows/maven.yml</url>
   </ciManagement>
 
   <properties>
