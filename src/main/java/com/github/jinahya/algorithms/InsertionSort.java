@@ -8,7 +8,8 @@ import java.util.concurrent.ThreadLocalRandom;
 /**
  * An interface for insertion-sort.
  *
- * @author Jin Kwon &lt;jin.kwon_at_meshkorea.net&gt;
+ * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
+ * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  * @implSpec implementation classes should have a no-args constructor.
  * @see <a href="https://en.wikipedia.org/wiki/Insertion_sort">Insertion sort</a> (wikipedia)
  * @see <a href="https://en.wikipedia.org/wiki/Sorting_algorithm#Stability">Stability</a> (wikipedia / Sorting

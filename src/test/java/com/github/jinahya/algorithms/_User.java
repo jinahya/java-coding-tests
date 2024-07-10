@@ -12,7 +12,7 @@ import java.util.Objects;
  * @param id   a value for the {@link #id} field which should be non-negative.
  * @param name a value for the {@link #name} field which should be not {@code null} nor {@link String#isBlank() blank}.
  * @param age  a value for the {@link #age} field which should be non-negative.
- * @author Jin Kwon &lt;jin.kwon_at_meshkorea.net&gt;
+ * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  */
 // https://www.morling.dev/blog/enforcing-java-record-invariants-with-bean-validation/
 record _User(@PositiveOrZero int id, @NotBlank String name, @PositiveOrZero int age)

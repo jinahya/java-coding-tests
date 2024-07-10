@@ -16,18 +16,14 @@ import java.util.concurrent.ThreadLocalRandom;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatCode;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.mockito.Mockito.spy;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
+import static org.assertj.core.api.Assertions.*;
+import static org.mockito.Mockito.*;
 
 /**
  * An abstract class for testing classes implement {@link InsertionSort} interface.
  *
  * @param <T> implementation type parameter
- * @author Jin Kwon &lt;jin.kwon_at_meshkorea.net&gt;
+ * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  */
 @Slf4j
 abstract class InsertionSortTest<T extends InsertionSort> {

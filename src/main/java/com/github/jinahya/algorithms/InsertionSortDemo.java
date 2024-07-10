@@ -1,16 +1,12 @@
 package com.github.jinahya.algorithms;
 
 import java.lang.reflect.Array;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 
 /**
  * A, demonstration-purpose only, class implements {@link InsertionSort} interface.
  *
- * @author Jin Kwon &lt;jin.kwon_at_meshkorea.net&gt;
+ * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  */
 class InsertionSortDemo
         implements InsertionSort {
