@@ -15,15 +15,15 @@ import java.util.Objects;
 class InsertionSortDemo
         implements InsertionSort {
 
-    private static int length(final Object sorteee) {
-        Objects.requireNonNull(sorteee, "sorteee is null");
-        if (sorteee.getClass().isArray()) {
-            return Array.getLength(sorteee);
+    private static int count(final Object sortee) {
+        Objects.requireNonNull(sortee, "sortee is null");
+        if (sortee.getClass().isArray()) {
+            return Array.getLength(sortee);
         }
-        if (sorteee instanceof Collection) {
-            return ((Collection<?>) sorteee).size();
+        if (sortee instanceof Collection) {
+            return ((Collection<?>) sortee).size();
         }
-        throw new IllegalArgumentException("invalid sortee type: " + sorteee);
+        throw new IllegalArgumentException("invalid sortee type: " + sortee);
     }
 
     private static void check(final Object sortee, final int fromIndex, final int toIndex) {
@@ -33,15 +33,15 @@ class InsertionSortDemo
         if (fromIndex < 0) {
             throw new ArrayIndexOutOfBoundsException("fromIndex(" + fromIndex + ") < 0");
         }
-        final var length = length(sortee);
-        if (toIndex > length) {
-            throw new ArrayIndexOutOfBoundsException("toIndex(" + toIndex + ") is > sortee.length(" + length + ")");
+        final var count = count(sortee);
+        if (toIndex > count) {
+            throw new ArrayIndexOutOfBoundsException("toIndex(" + toIndex + ") is > sortee.count(" + count + ")");
         }
     }
 
     private static void check(final Object sortee, final int fromIndex, final int toIndex, final Object comparator) {
         check(sortee, fromIndex, toIndex);
-        length(comparator);
+        count(comparator);
     }
 
     // -----------------------------------------------------------------------------------------------------------------

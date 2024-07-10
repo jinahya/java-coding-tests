@@ -15,7 +15,7 @@ import java.util.Objects;
  * @author Jin Kwon &lt;jin.kwon_at_meshkorea.net&gt;
  */
 // https://www.morling.dev/blog/enforcing-java-record-invariants-with-bean-validation/
-public record _User(@PositiveOrZero int id, @NotBlank String name, @PositiveOrZero int age)
+record _User(@PositiveOrZero int id, @NotBlank String name, @PositiveOrZero int age)
         implements Comparable<_User> {
 
     public static final Comparator<_User> NOT_COMPARING = (o1, o2) -> 0;
