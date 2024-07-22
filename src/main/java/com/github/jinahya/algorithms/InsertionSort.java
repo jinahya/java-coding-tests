@@ -31,6 +31,19 @@ interface InsertionSort {
     void sort(final int[] array, final int fromIndex, final int toIndex);
 
     /**
+     * Sorts the specified range of the array into ascending order.
+     *
+     * @param array     the array to be sorted.
+     * @param fromIndex the index of the first element, inclusive, to be sorted.
+     * @param toIndex   the index of the last element, exclusive, to be sorted.
+     * @throws NullPointerException           if {@code array} is {@code null}.
+     * @throws IllegalArgumentException       if {@code fromIndex} is greater than {@code toIndex}.
+     * @throws ArrayIndexOutOfBoundsException if {@code fromIndex} is less than {@code 0} or {@code toIndex} is greater
+     *                                        than {@code array.length}.
+     */
+    void sort(final long[] array, final int fromIndex, final int toIndex);
+
+    /**
      * Sorts the specified array into ascending numerical order.
      *
      * @param array the array to be sorted.

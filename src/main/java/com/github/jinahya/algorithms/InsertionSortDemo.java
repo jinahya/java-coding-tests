@@ -47,6 +47,12 @@ class InsertionSortDemo
         Arrays.sort(array, fromIndex, toIndex); // ---------------------------------------------------------- ALGORITHM?
     }
 
+    @Override
+    public void sort(final long[] array, final int fromIndex, final int toIndex) {
+        check(array, fromIndex, toIndex);
+        Arrays.sort(array, fromIndex, toIndex); // ---------------------------------------------------------- ALGORITHM?
+    }
+
     // -----------------------------------------------------------------------------------------------------------------
     @Override
     public <T> void sort(final List<T> list, final Comparator<? super T> comparator) {

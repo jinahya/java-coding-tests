@@ -77,7 +77,7 @@ abstract class InsertionSortTest<T extends InsertionSort> {
     }
 
     // -----------------------------------------------------------------------------------------------------------------
-    @DisplayName("sort(array, fromIndex, toIndex)")
+    @DisplayName("sort(int[], fromIndex, toIndex)")
     @Nested
     class SortIntArrayWithIndicesTest {
 
@@ -219,6 +219,7 @@ abstract class InsertionSortTest<T extends InsertionSort> {
         }
     }
 
+    // -----------------------------------------------------------------------------------------------------------------
     @DisplayName("sort(array)")
     @Nested
     class SortIntArrayTest {

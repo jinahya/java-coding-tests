@@ -16,6 +16,11 @@ class InsertionSortImpl
         // TODO: implement
     }
 
+    @Override
+    public void sort(final long[] array, final int fromIndex, final int toIndex) {
+        // TODO: implement
+    }
+
     // -----------------------------------------------------------------------------------------------------------------
     @Override
     public <T> void sort(final List<T> list, final Comparator<? super T> comparator) {
