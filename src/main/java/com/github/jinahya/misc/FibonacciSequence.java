@@ -3,50 +3,24 @@ package com.github.jinahya.misc;
 import java.math.BigInteger;
 
 /**
- * dfadfsdfsffd.
- * <math>
- * <mfrac>
- * <mn>1</mn>
- * <msqrt>
- * <mn>2</mn>
- * </msqrt>
- * </mfrac>
- * </math>
- * <p>
+ * A class generates <a href="#definition">Fibonacci sequence</a>.
+ *
+ * <h2 id="definition">Fibonacci sequence</h2>
  * <math xmlns="http://www.w3.org/1998/Math/MathML">
- *   <mi>a</mi>
- *   <msup><mi>x</mi><mn>2</mn></msup>
- *   <mo>+</mo>
- *   <mi>b</mi>
- *   <mi>x</mi>
- *   <mo>+</mo>
- *   <mi>c</mi>
- *   <mo>=</mo>
- *   <mn>0</mn>
+ * <mrow>
+ * <msub><mi>F</mi><mn>0</mn></msub><mo>=</mo><mi>0</mi>
+ * <mtext>,&ThickSpace;</mtext>
+ * </mrow>
+ * <mrow>
+ * <msub><mi>F</mi><mn>1</mn></msub><mo>=</mo><mi>1</mi>
+ * <mtext>,&ThickSpace;and&ThickSpace;</mtext>
+ * <msub><mi>F</mi><mn>n</mn></msub><mo>=</mo><msub><mi>F</mi><mn>n-1</mn></msub>
+ * <mo>+</mo>
+ * <msub><mi>F</mi><mn>n-2</mn></msub>
+ * <mtext>&NewLine;for</mtext><mi>n</mi><mo>></mo><mi>1</mi>
+ * </mrow>
  * </math>
- * <p>
- *     aaa
- * <math xmlns="http://www.w3.org/1998/Math/MathML">
- *     <fn><ci>F</ci><ci>0</ci></fn>
- *     <mo>=</mo>
- *     <mi>0</mi>
-
-
- *     <mo>,</mo>
- *     <mi>F(1)</mi>
- *     <mo>=</mo>
- *     <mi>1</mi>
- *     <mo>, and</mo>
- *     <mi>F(n)</mi>
- *     <mo>=</mo>
- *     <mi>F(n-2)</mi>
- *     <mo>+</mo>
- *     <mi>F(n-1)</mi>
- *     <mi> for </mi>
- *     <mi>n</mi>
- *     <mo>></mo>
- *     <mi>1</mi>
- * </math>
+ *
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  */
 public final class FibonacciSequence {
