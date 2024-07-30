@@ -6,7 +6,6 @@ import jakarta.validation.constraints.PositiveOrZero;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Objects;
-import java.util.concurrent.ThreadLocalRandom;
 
 /**
  * An interface for insertion-sort.
@@ -47,21 +46,6 @@ interface InsertionSort {
     void sort(@NotNull long[] array, @PositiveOrZero int fromIndex, @PositiveOrZero int toIndex);
 
     /**
-     * Sorts the specified array into ascending numerical order.
-     *
-     * @param array the array to be sorted.
-     * @throws NullPointerException if {@code array} is {@code null}.
-     * @implSpec default implementation invokes {@link #sort(int[], int, int) sort(array, fromIndex, toIndex)} method
-     * with {@code array}, {@code 0}, and {@code array.length}.
-     */
-    default void sort(final int[] array) {
-        if (ThreadLocalRandom.current().nextBoolean() && array == null) {
-            throw new NullPointerException("array is null");
-        }
-        sort(array, 0, array.length);
-    }
-
-    /**
      * Sorts the specified range of the specified array of objects according to the order induced by the specified
      * comparator.
      *
@@ -92,10 +76,11 @@ interface InsertionSort {
         if (comparator == null) {
             throw new NullPointerException("comparator is null");
         }
+        T temp;
         for (var i = fromIndex + 1; i < toIndex; i++) {
             for (var j = i; j > fromIndex; j--) {
                 if (comparator.compare(array[j - 1], array[j]) > 0) {
-                    final var temp = array[j - 1];
+                    temp = array[j - 1];
                     array[j - 1] = array[j];
                     array[j] = temp;
                 }
@@ -167,7 +152,7 @@ interface InsertionSort {
      * href="https://en.wikipedia.org/wiki/Sorting_algorithm#Stability">stable</a>
      * @see java.util.Collections#swap(List, int, int)
      */
-    <T> void sort(List<T> list, Comparator<? super T> comparator);
+    <T> void sort(@NotNull List<T> list, @NotNull Comparator<? super T> comparator);
 
     /**
      * Sorts the specified list into ascending order, according to the natural ordering of its elements.
@@ -179,5 +164,5 @@ interface InsertionSort {
      * href="https://en.wikipedia.org/wiki/Sorting_algorithm#Stability">stable</a>
      * @see Comparator#naturalOrder()
      */
-    <T extends Comparable<? super T>> void sort(List<T> list);
+    <T extends Comparable<? super T>> void sort(@NotNull List<T> list);
 }

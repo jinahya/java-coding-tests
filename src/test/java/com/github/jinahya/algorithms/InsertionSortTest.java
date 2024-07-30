@@ -14,10 +14,11 @@ import java.util.Comparator;
 import java.util.Objects;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.stream.IntStream;
+import java.util.stream.LongStream;
 import java.util.stream.Stream;
 
 import static org.assertj.core.api.Assertions.*;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.spy;
 
 /**
  * An abstract class for testing classes implement {@link InsertionSort} interface.
@@ -53,7 +54,7 @@ abstract class InsertionSortTest<T extends InsertionSort> {
 
     private static Stream<int[]> getIntArrayStreamCatastrophic() {
         return Stream.of(
-                IntStream.range(0, 1048576 << 1)
+                IntStream.range(0, 1048576)
                         .map(i -> ThreadLocalRandom.current().nextInt())
                         .toArray()
         );
@@ -62,6 +63,42 @@ abstract class InsertionSortTest<T extends InsertionSort> {
     private static Stream<Arguments> getIntArrayAndIndicesArgumentsStreamCatastrophic() {
         return getIntArrayStreamCatastrophic()
                 .map(InsertionSortTest::getIntArrayAndIndicesArguments);
+    }
+
+    private static Arguments getLongArrayAndIndicesArguments(final long[] array) {
+        Objects.requireNonNull(array, "array is null");
+        final var fromIndex = ThreadLocalRandom.current().nextInt(0, array.length + 1);
+        final var toIndex = ThreadLocalRandom.current().nextInt(fromIndex, array.length + 1);
+        assert fromIndex >= 0;
+        assert toIndex <= array.length;
+        assert fromIndex <= toIndex;
+        return Arguments.of(array, fromIndex, toIndex);
+    }
+
+    private static Stream<long[]> getLongArrayStream() {
+        return Stream.of(
+                new long[0],
+                new long[]{ThreadLocalRandom.current().nextLong()},
+                LongStream.range(2, 16).map(i -> ThreadLocalRandom.current().nextLong()).toArray()
+        );
+    }
+
+    private static Stream<Arguments> getLongArrayAndIndicesArgumentsStream() {
+        return getLongArrayStream()
+                .map(InsertionSortTest::getLongArrayAndIndicesArguments);
+    }
+
+    private static Stream<long[]> getLongArrayStreamCatastrophic() {
+        return Stream.of(
+                LongStream.range(0, 1048576)
+                        .map(i -> ThreadLocalRandom.current().nextLong())
+                        .toArray()
+        );
+    }
+
+    private static Stream<Arguments> getLongArrayAndIndicesArgumentsStreamCatastrophic() {
+        return getLongArrayStreamCatastrophic()
+                .map(InsertionSortTest::getLongArrayAndIndicesArguments);
     }
 
     // ---------------------------------------------------------------------------------------------------- CONSTRUCTORS
@@ -76,8 +113,8 @@ abstract class InsertionSortTest<T extends InsertionSort> {
         this.implementationClass = Objects.requireNonNull(implementationClass, "implementationClass is null");
     }
 
-    // -----------------------------------------------------------------------------------------------------------------
-    @DisplayName("sort(int[], fromIndex, toIndex)")
+    // ------------------------------------------------------------------------------------------- sort(int[], int, int)
+    @DisplayName("sort(int[], int, int")
     @Nested
     class SortIntArrayWithIndicesTest {
 
@@ -86,7 +123,7 @@ abstract class InsertionSortTest<T extends InsertionSort> {
         }
 
         private static Stream<Arguments> getIntArrayAndIndicesArgumentsStreamCatastrophic() {
-            return InsertionSortTest.getIntArrayAndIndicesArgumentsStream();
+            return InsertionSortTest.getIntArrayAndIndicesArgumentsStreamCatastrophic();
         }
 
         @DisplayName("should throw NullPointerException when array is null")
@@ -105,7 +142,7 @@ abstract class InsertionSortTest<T extends InsertionSort> {
                     .isInstanceOf(NullPointerException.class);
         }
 
-        @DisplayName("throw ArrayIndexOutOfBoundsException when fromIndex is less than 0")
+        @DisplayName("should throw ArrayIndexOutOfBoundsException when fromIndex is less than 0")
         @Test
         void _ThrowArrayIndexOutOfBoundsException_FromIndexIsLessThan0() {
             // --------------------------------------------------------------------------------------------------- given
@@ -156,10 +193,34 @@ abstract class InsertionSortTest<T extends InsertionSort> {
                     .isInstanceOf(IllegalArgumentException.class);
         }
 
+        private void verify(final int[] array, final int fromIndex, final int toIndex, final int[] copy) {
+            assert array != null;
+            assert fromIndex >= 0;
+            assert toIndex <= array.length;
+            assert fromIndex <= toIndex;
+            assert copy != null;
+            assert copy != array;
+            assert copy.length == array.length;
+            for (int i = 0; i < fromIndex; i++) {
+                assertThat(array[i])
+                        .as("element at %1$d before the fromIndex(%2$d)(exclusive)", i, fromIndex)
+                        .isEqualTo(copy[i]);
+            }
+            for (int i = toIndex + 1; i < array.length; i++) {
+                assertThat(array[i])
+                        .as("element at %1$d after the toIndex(%2$d)(inclusive)", i, toIndex)
+                        .isEqualTo(copy[i]);
+            }
+            final var range = Arrays.copyOfRange(array, fromIndex, toIndex);
+            assertThat(range)
+                    .as("elements between %1$d(inclusive) and %2$d(exclusive)", fromIndex, toIndex)
+                    .isSorted();
+        }
+
         @DisplayName("should sort given range")
         @MethodSource({"getIntArrayAndIndicesArgumentsStream"})
         @ParameterizedTest
-        void _ShouldSort_Range(final int[] array, final int fromIndex, final int toIndex) {
+        void _ShouldSort_(final int[] array, final int fromIndex, final int toIndex) {
             assert array != null;
             assert fromIndex >= 0;
             assert toIndex <= array.length;
@@ -171,26 +232,13 @@ abstract class InsertionSortTest<T extends InsertionSort> {
             assertThatCode(() -> instance.sort(array, fromIndex, toIndex))
                     .doesNotThrowAnyException();
             // ---------------------------------------------------------------------------------------------------- then
-            for (int i = 0; i < fromIndex; i++) {
-                assertThat(array[i])
-                        .as("element at %1$d before the fromIndex(%2$d)(exclusive)", i, fromIndex)
-                        .isEqualTo(copy[i]);
-            }
-            for (int i = toIndex; i < array.length; i++) {
-                assertThat(array[i])
-                        .as("element at %1$d after the toIndex(%2$d)(inclusive)", i, toIndex)
-                        .isEqualTo(copy[i]);
-            }
-            final var range = Arrays.copyOfRange(array, fromIndex, toIndex);
-            assertThat(range)
-                    .as("elements between %1$d(inclusive) and %2$d(exclusive)", fromIndex, toIndex)
-                    .isSorted();
+            verify(array, fromIndex, toIndex, copy);
         }
 
         @DisplayName("should sort given range (catastrophic)")
         @MethodSource({"getIntArrayAndIndicesArgumentsStreamCatastrophic"})
         @ParameterizedTest
-        void _ShouldSort_RangeCatastrophic(final int[] array, final int fromIndex, final int toIndex) {
+        void _ShouldSort_Catastrophic(final int[] array, final int fromIndex, final int toIndex) {
             assert array != null;
             assert fromIndex >= 0;
             assert toIndex <= array.length;
@@ -202,57 +250,153 @@ abstract class InsertionSortTest<T extends InsertionSort> {
             assertThatCode(() -> instance.sort(array, fromIndex, toIndex))
                     .doesNotThrowAnyException();
             // ---------------------------------------------------------------------------------------------------- then
-            for (int i = 0; i < fromIndex; i++) {
-                assertThat(array[i])
-                        .as("element at %1$d before the fromIndex(%2$d)(exclusive)", i, fromIndex)
-                        .isEqualTo(copy[i]);
-            }
-            for (int i = toIndex; i < array.length; i++) {
-                assertThat(array[i])
-                        .as("element at %1$d after the toIndex(%2$d)(inclusive)", i, toIndex)
-                        .isEqualTo(copy[i]);
-            }
-            final var range = Arrays.copyOfRange(array, fromIndex, toIndex);
-            assertThat(range)
-                    .as("elements between %1$d(inclusive) and %2$d(exclusive)", fromIndex, toIndex)
-                    .isSorted();
+            verify(array, fromIndex, toIndex, copy);
         }
     }
 
-    // -----------------------------------------------------------------------------------------------------------------
-    @DisplayName("sort(array)")
+    // ------------------------------------------------------------------------------------------ sort(long[], int, int)
+    @DisplayName("sort(long[], int, int")
     @Nested
-    class SortIntArrayTest {
+    class SortLongArrayWithIndicesTest {
+
+        private static Stream<Arguments> getLongArrayAndIndicesArgumentsStream() {
+            return InsertionSortTest.getLongArrayAndIndicesArgumentsStream();
+        }
+
+        private static Stream<Arguments> getLongArrayAndIndicesArgumentsStreamCatastrophic() {
+            return InsertionSortTest.getLongArrayAndIndicesArgumentsStreamCatastrophic();
+        }
 
         @DisplayName("should throw NullPointerException when array is null")
         @Test
         void _ThrowNullPointerException_ArrayIsNull() {
             // --------------------------------------------------------------------------------------------------- given
             final var instance = implementationInstance();
-            final var array = (int[]) null;
-            assert array == null;
+            final var array = (long[]) null;
+            final var fromIndex = 0;
+            final var toIndex = 0;
+            assert fromIndex >= 0;
+            assert array == null || toIndex <= array.length;
+            assert fromIndex <= toIndex;
             // ----------------------------------------------------------------------------------------------- when/then
-            assertThatThrownBy(() -> instance.sort(array))
-                    .as("thrown by sort((int[]) null")
+            assertThatThrownBy(() -> instance.sort(array, fromIndex, toIndex))
                     .isInstanceOf(NullPointerException.class);
         }
 
-        @DisplayName("should invoke sort(array, 0, array.length)")
+        @DisplayName("should throw ArrayIndexOutOfBoundsException when fromIndex is less than 0")
         @Test
-        void __() {
+        void _ThrowArrayIndexOutOfBoundsException_FromIndexIsLessThan0() {
             // --------------------------------------------------------------------------------------------------- given
-            final var instance = implementationSpy();
+            final var instance = implementationInstance();
             final var array = new int[0];
+            final var fromIndex = ThreadLocalRandom.current().nextInt() | Integer.MIN_VALUE;
+            final var toIndex = array.length;
             assert array != null;
+            assert fromIndex < 0;
+            assert toIndex <= array.length;
+            assert fromIndex <= toIndex;
+            // ----------------------------------------------------------------------------------------------- when/then
+            assertThatThrownBy(() -> instance.sort(array, fromIndex, toIndex))
+                    .isInstanceOf(ArrayIndexOutOfBoundsException.class);
+        }
+
+        @DisplayName("should throw ArrayIndexOutOfBoundsException when toIndex is greater than array.length")
+        @Test
+        void _ThrowArrayIndexOutOfBoundsException_ToIndexIsGreaterThanArrayLength() {
+            // --------------------------------------------------------------------------------------------------- given
+            final var instance = implementationInstance();
+            final var array = new int[0];
+            final var fromIndex = 0;
+            final var toIndex = ThreadLocalRandom.current().nextInt() & 0x7FFFFFFF;
+            assert array != null;
+            assert fromIndex >= 0;
+            assert toIndex > array.length;
+            assert fromIndex <= toIndex;
+            // ----------------------------------------------------------------------------------------------- when/then
+            assertThatThrownBy(() -> instance.sort(array, fromIndex, toIndex))
+                    .isInstanceOf(ArrayIndexOutOfBoundsException.class);
+        }
+
+        @DisplayName("should throw IllegalArgumentException when fromIndex is greater than toIndex")
+        @Test
+        void _ThrowIllegalArgumentException_FromIndexIsGreaterThanToIndex() {
+            // --------------------------------------------------------------------------------------------------- given
+            final var instance = implementationInstance();
+            final var array = new int[ThreadLocalRandom.current().nextInt(1, 16)];
+            final var fromIndex = ThreadLocalRandom.current().nextInt(1, array.length + 1);
+            final var toIndex = ThreadLocalRandom.current().nextInt(0, fromIndex);
+            assert array != null;
+            assert fromIndex >= 0;
+            assert toIndex <= array.length;
+            assert fromIndex > toIndex;
+            // ----------------------------------------------------------------------------------------------- when/then
+            assertThatThrownBy(() -> instance.sort(array, fromIndex, toIndex))
+                    .isInstanceOf(IllegalArgumentException.class);
+        }
+
+        private void verify(final long[] array, final int fromIndex, final int toIndex, final long[] copy) {
+            assert array != null;
+            assert fromIndex >= 0;
+            assert toIndex <= array.length;
+            assert fromIndex <= toIndex;
+            assert copy != null;
+            assert copy != array;
+            assert copy.length == array.length;
+            for (int i = 0; i < fromIndex; i++) {
+                assertThat(array[i])
+                        .as("element at %1$d before the fromIndex(%2$d)(exclusive)", i, fromIndex)
+                        .isEqualTo(copy[i]);
+            }
+            for (int i = toIndex + 1; i < array.length; i++) {
+                assertThat(array[i])
+                        .as("element at %1$d after the toIndex(%2$d)(inclusive)", i, toIndex)
+                        .isEqualTo(copy[i]);
+            }
+            final var range = Arrays.copyOfRange(array, fromIndex, toIndex);
+            assertThat(range)
+                    .as("elements between %1$d(inclusive) and %2$d(exclusive)", fromIndex, toIndex)
+                    .isSorted();
+        }
+
+        @DisplayName("should sort given range")
+        @MethodSource({"getLongArrayAndIndicesArgumentsStream"})
+        @ParameterizedTest
+        void _ShouldSort_(final long[] array, final int fromIndex, final int toIndex) {
+            assert array != null;
+            assert fromIndex >= 0;
+            assert toIndex <= array.length;
+            assert fromIndex <= toIndex;
+            final var copy = Arrays.copyOf(array, array.length);
+            // --------------------------------------------------------------------------------------------------- given
+            final var instance = implementationInstance();
             // ---------------------------------------------------------------------------------------------------- when
-            assertThatCode(() -> instance.sort(array))
+            assertThatCode(() -> instance.sort(array, fromIndex, toIndex))
                     .doesNotThrowAnyException();
             // ---------------------------------------------------------------------------------------------------- then
-            verify(instance, times(1)).sort(array, 0, array.length);
+            verify(array, fromIndex, toIndex, copy);
+        }
+
+        @DisplayName("should sort given range (catastrophic)")
+        @MethodSource({"getLongArrayAndIndicesArgumentsStreamCatastrophic"})
+        @ParameterizedTest
+        void _ShouldSort_Catastrophic(final long[] array, final int fromIndex, final int toIndex) {
+            assert array != null;
+            assert fromIndex >= 0;
+            assert toIndex <= array.length;
+            assert fromIndex <= toIndex;
+            final var copy = Arrays.copyOf(array, array.length);
+            // --------------------------------------------------------------------------------------------------- given
+            final var instance = implementationInstance();
+            // ---------------------------------------------------------------------------------------------------- when
+            assertThatCode(() -> instance.sort(array, fromIndex, toIndex))
+                    .doesNotThrowAnyException();
+            // ---------------------------------------------------------------------------------------------------- then
+            verify(array, fromIndex, toIndex, copy);
         }
     }
 
-    @DisplayName("sort(array, fromIndex, toIndex, comparator)")
+    // -----------------------------------------------------------------------------------------------------------------
+    @DisplayName("sort(Object[], int, int, Comparator)")
     @Nested
     class SortObjectArrayWithIndicesAndComparatorTest {
 

@@ -1,6 +1,5 @@
 package com.github.jinahya.algorithms;
 
-import java.lang.reflect.Array;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Objects;
@@ -10,12 +9,6 @@ import java.util.Objects;
  */
 class InsertionSortImpl
         implements InsertionSort {
-
-    private static void swap(final Object a, final int i, final int j) {
-        final Object v = Array.get(a, i);
-        Array.set(a, i, Array.get(a, j));
-        Array.set(a, j, v);
-    }
 
     // -----------------------------------------------------------------------------------------------------------------
     @Override
@@ -33,9 +26,11 @@ class InsertionSortImpl
             );
         }
         int temp;
-        for (int i = 0; i < array.length; i++) {
-            for (int j = i - 1; j > 0 && array[j - 1] > array[j]; j--) {
-                swap(array, j - 1, j);
+        for (var i = fromIndex; i < toIndex; i++) {
+            for (var j = i; j > fromIndex && array[j - 1] > array[j]; j--) {
+                temp = array[j - 1];
+                array[j - 1] = array[j];
+                array[j] = temp;
             }
         }
     }
