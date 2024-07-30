@@ -1,5 +1,8 @@
 package com.github.jinahya.algorithms;
 
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.PositiveOrZero;
+
 import java.util.Comparator;
 import java.util.List;
 import java.util.Objects;
@@ -28,7 +31,7 @@ interface InsertionSort {
      * @throws ArrayIndexOutOfBoundsException if {@code fromIndex} is less than {@code 0} or {@code toIndex} is greater
      *                                        than {@code array.length}.
      */
-    void sort(final int[] array, final int fromIndex, final int toIndex);
+    void sort(@NotNull int[] array, @PositiveOrZero int fromIndex, @PositiveOrZero int toIndex);
 
     /**
      * Sorts the specified range of the array into ascending order.
@@ -41,7 +44,7 @@ interface InsertionSort {
      * @throws ArrayIndexOutOfBoundsException if {@code fromIndex} is less than {@code 0} or {@code toIndex} is greater
      *                                        than {@code array.length}.
      */
-    void sort(final long[] array, final int fromIndex, final int toIndex);
+    void sort(@NotNull long[] array, @PositiveOrZero int fromIndex, @PositiveOrZero int toIndex);
 
     /**
      * Sorts the specified array into ascending numerical order.
