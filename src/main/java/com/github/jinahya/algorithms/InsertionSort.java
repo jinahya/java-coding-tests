@@ -59,8 +59,8 @@ interface InsertionSort {
      * @throws ArrayIndexOutOfBoundsException if {@code fromIndex} is less than {@code 0} or {@code toIndex} is greater
      *                                        than {@code array.length}.
      */
-    default <T> void sort(final T[] array, final int fromIndex, final int toIndex,
-                          final Comparator<? super T> comparator) {
+    default <T> void sort(final @NotNull T[] array, final @PositiveOrZero int fromIndex,
+                          final @PositiveOrZero int toIndex, final @NotNull Comparator<? super T> comparator) {
         Objects.requireNonNull(array, "array is null");
         if (fromIndex > toIndex) {
             throw new IllegalArgumentException("fromIndex(" + fromIndex + ") > toIndex(" + toIndex + ")");
@@ -89,24 +89,6 @@ interface InsertionSort {
     }
 
     /**
-     * Sorts the specified array of objects according to the order induced by the specified comparator.
-     *
-     * @param array      the array to be sorted.
-     * @param comparator the comparator to determine the order of the array.
-     * @param <T>        element type parameter
-     * @throws NullPointerException if either {@code array} or {@code comparator} is {@code null}.
-     * @implSpec default implementation invokes
-     * {@link #sort(Object[], int, int, Comparator) sort(array, fromIndex, toIndex, comparator)} method with
-     * {@code array}, {@code 0}, {@code array.length}, and {@code comparator}.
-     * @implSpec implementation should be <a
-     * href="https://en.wikipedia.org/wiki/Sorting_algorithm#Stability">stable</a>
-     */
-    default <T> void sort(final T[] array, final Comparator<? super T> comparator) {
-        Objects.requireNonNull(array, "array is null");
-        sort(array, 0, array.length, comparator);
-    }
-
-    /**
      * Sorts the specified array of objects in {@link Comparator#naturalOrder() natural order}.
      *
      * @param array     the list whose elements are sorted.
@@ -124,20 +106,6 @@ interface InsertionSort {
      */
     default <T extends Comparable<? super T>> void sort(final T[] array, final int fromIndex, final int toIndex) {
         sort(array, fromIndex, toIndex, Comparator.naturalOrder());
-    }
-
-    /**
-     * Sorts the specified array of objects in natual order.
-     *
-     * @param array the list whose elements are sorted.
-     * @param <T>   element type parameter
-     * @throws NullPointerException when {@code array} is {@code null}.
-     * @implSpec implementation should be <a
-     * href="https://en.wikipedia.org/wiki/Sorting_algorithm#Stability">stable</a>
-     */
-    default <T extends Comparable<? super T>> void sort(final T[] array) {
-        Objects.requireNonNull(array, "list is null");
-        sort(array, 0, array.length);
     }
 
     // -----------------------------------------------------------------------------------------------------------------

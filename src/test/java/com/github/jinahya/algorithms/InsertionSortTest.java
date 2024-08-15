@@ -9,10 +9,9 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 
-import java.util.Arrays;
-import java.util.Comparator;
-import java.util.Objects;
+import java.util.*;
 import java.util.concurrent.ThreadLocalRandom;
+import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import java.util.stream.LongStream;
 import java.util.stream.Stream;
@@ -29,6 +28,14 @@ import static org.mockito.Mockito.spy;
 @Slf4j
 abstract class InsertionSortTest<T extends InsertionSort> {
 
+    private static Stream<int[]> getIntArrayStream() {
+        return Stream.of(
+                new int[0],
+                new int[]{ThreadLocalRandom.current().nextInt()},
+                IntStream.range(2, 16).map(i -> ThreadLocalRandom.current().nextInt()).toArray()
+        );
+    }
+
     private static Arguments getIntArrayAndIndicesArguments(final int[] array) {
         Objects.requireNonNull(array, "array is null");
         final var fromIndex = ThreadLocalRandom.current().nextInt(0, array.length + 1);
@@ -37,14 +44,6 @@ abstract class InsertionSortTest<T extends InsertionSort> {
         assert toIndex <= array.length;
         assert fromIndex <= toIndex;
         return Arguments.of(array, fromIndex, toIndex);
-    }
-
-    private static Stream<int[]> getIntArrayStream() {
-        return Stream.of(
-                new int[0],
-                new int[]{ThreadLocalRandom.current().nextInt()},
-                IntStream.range(2, 16).map(i -> ThreadLocalRandom.current().nextInt()).toArray()
-        );
     }
 
     private static Stream<Arguments> getIntArrayAndIndicesArgumentsStream() {
@@ -65,6 +64,15 @@ abstract class InsertionSortTest<T extends InsertionSort> {
                 .map(InsertionSortTest::getIntArrayAndIndicesArguments);
     }
 
+    // -----------------------------------------------------------------------------------------------------------------
+    private static Stream<long[]> getLongArrayStream() {
+        return Stream.of(
+                new long[0],
+                new long[]{ThreadLocalRandom.current().nextLong()},
+                LongStream.range(2, 16).map(i -> ThreadLocalRandom.current().nextLong()).toArray()
+        );
+    }
+
     private static Arguments getLongArrayAndIndicesArguments(final long[] array) {
         Objects.requireNonNull(array, "array is null");
         final var fromIndex = ThreadLocalRandom.current().nextInt(0, array.length + 1);
@@ -73,14 +81,6 @@ abstract class InsertionSortTest<T extends InsertionSort> {
         assert toIndex <= array.length;
         assert fromIndex <= toIndex;
         return Arguments.of(array, fromIndex, toIndex);
-    }
-
-    private static Stream<long[]> getLongArrayStream() {
-        return Stream.of(
-                new long[0],
-                new long[]{ThreadLocalRandom.current().nextLong()},
-                LongStream.range(2, 16).map(i -> ThreadLocalRandom.current().nextLong()).toArray()
-        );
     }
 
     private static Stream<Arguments> getLongArrayAndIndicesArgumentsStream() {
@@ -139,12 +139,13 @@ abstract class InsertionSortTest<T extends InsertionSort> {
             assert fromIndex <= toIndex;
             // ----------------------------------------------------------------------------------------------- when/then
             assertThatThrownBy(() -> instance.sort(array, fromIndex, toIndex))
+                    .as("thrown by sort(null, , )")
                     .isInstanceOf(NullPointerException.class);
         }
 
-        @DisplayName("should throw ArrayIndexOutOfBoundsException when fromIndex is less than 0")
+        @DisplayName("should throw ArrayIndexOutOfBoundsException when fromIndex is less than zero")
         @Test
-        void _ThrowArrayIndexOutOfBoundsException_FromIndexIsLessThan0() {
+        void _ThrowArrayIndexOutOfBoundsException_FromIndexIsLessThanZero() {
             // --------------------------------------------------------------------------------------------------- given
             final var instance = implementationInstance();
             final var array = new int[0];
@@ -156,6 +157,7 @@ abstract class InsertionSortTest<T extends InsertionSort> {
             assert fromIndex <= toIndex;
             // ----------------------------------------------------------------------------------------------- when/then
             assertThatThrownBy(() -> instance.sort(array, fromIndex, toIndex))
+                    .as("thrown by sort(%1$s, %2$d(<0), %3$d)", array, fromIndex, toIndex)
                     .isInstanceOf(ArrayIndexOutOfBoundsException.class);
         }
 
@@ -173,6 +175,7 @@ abstract class InsertionSortTest<T extends InsertionSort> {
             assert fromIndex <= toIndex;
             // ----------------------------------------------------------------------------------------------- when/then
             assertThatThrownBy(() -> instance.sort(array, fromIndex, toIndex))
+                    .as("thrown by sort(%1$s, %2$d, %3$d(>%4%d))", array, fromIndex, toIndex, array.length)
                     .isInstanceOf(ArrayIndexOutOfBoundsException.class);
         }
 
@@ -190,6 +193,7 @@ abstract class InsertionSortTest<T extends InsertionSort> {
             assert fromIndex > toIndex;
             // ----------------------------------------------------------------------------------------------- when/then
             assertThatThrownBy(() -> instance.sort(array, fromIndex, toIndex))
+                    .as("thrown by sort(%1$s, %2$d(>%3$d), %3$d", array, fromIndex, toIndex)
                     .isInstanceOf(IllegalArgumentException.class);
         }
 
@@ -206,7 +210,7 @@ abstract class InsertionSortTest<T extends InsertionSort> {
                         .as("element at %1$d before the fromIndex(%2$d)(exclusive)", i, fromIndex)
                         .isEqualTo(copy[i]);
             }
-            for (int i = toIndex + 1; i < array.length; i++) {
+            for (int i = toIndex; i < array.length; i++) {
                 assertThat(array[i])
                         .as("element at %1$d after the toIndex(%2$d)(inclusive)", i, toIndex)
                         .isEqualTo(copy[i]);
@@ -347,7 +351,7 @@ abstract class InsertionSortTest<T extends InsertionSort> {
                         .as("element at %1$d before the fromIndex(%2$d)(exclusive)", i, fromIndex)
                         .isEqualTo(copy[i]);
             }
-            for (int i = toIndex + 1; i < array.length; i++) {
+            for (int i = toIndex; i < array.length; i++) {
                 assertThat(array[i])
                         .as("element at %1$d after the toIndex(%2$d)(inclusive)", i, toIndex)
                         .isEqualTo(copy[i]);
@@ -396,7 +400,7 @@ abstract class InsertionSortTest<T extends InsertionSort> {
     }
 
     // -----------------------------------------------------------------------------------------------------------------
-    @DisplayName("sort(Object[], int, int, Comparator)")
+    @DisplayName("sort(array, fromIndex, toIndex, comparator)")
     @Nested
     class SortObjectArrayWithIndicesAndComparatorTest {
 
@@ -405,8 +409,7 @@ abstract class InsertionSortTest<T extends InsertionSort> {
         }
 
         private static void verify(final _User[] array, final int fromIndex, final int toIndex,
-                                   final Comparator<_User> comparator,
-                                   final _User[] copy) {
+                                   final Comparator<? super _User> comparator, final _User[] copy) {
             assert array != null;
             assert fromIndex >= 0;
             assert toIndex <= array.length;
@@ -542,22 +545,7 @@ abstract class InsertionSortTest<T extends InsertionSort> {
                     .as("sort(%1$s(%2$d), %3$d, %4$d, %5$s)", array, array.length, fromIndex, toIndex, comparator)
                     .doesNotThrowAnyException();
             // ---------------------------------------------------------------------------------------------------- then
-            for (int i = 0; i < fromIndex; i++) {
-                assertThat(array[i])
-                        .as("element at %1$d, before the fromIndex(%2$d)(exclusive), which should be remained as same",
-                            i, fromIndex)
-                        .isSameAs(copy[i]);
-            }
-            for (int i = toIndex; i < array.length; i++) {
-                assertThat(array[i])
-                        .as("element at %1$d, after the toIndex(%2$d)(inclusive), which should be remained as same", i,
-                            toIndex)
-                        .isSameAs(copy[i]);
-            }
-            final var range = Arrays.copyOfRange(array, fromIndex, toIndex);
-            assertThat(range)
-                    .as("elements between fromIndex(%1$d)(inclusive) and toIndex(%2$d)(exclusive)", fromIndex, toIndex)
-                    .isSortedAccordingTo(comparator);
+            verify(array, fromIndex, toIndex, comparator, copy);
         }
 
         @DisplayName("elements in given range should be shorted stable")
@@ -611,195 +599,71 @@ abstract class InsertionSortTest<T extends InsertionSort> {
         }
     }
 
-//    @DisplayName("sort(array, comparator)")
-//    @Nested
-//    class SortObjectArrayWithComparatorTest {
-//
-//        @DisplayName("should throw NullPointerException when array is null")
-//        @Test
-//        void _ThrowNullPointerException_ArrayIsNull() {
-//            // --------------------------------------------------------------------------------------------------- given
-//            final var instance = implementationInstance();
-//            final var array = (String[]) null;
-//            final var comparator = Comparator.<String>naturalOrder();
-//            // ----------------------------------------------------------------------------------------------- when/then
-//            assertThatThrownBy(() -> instance.sort(array, comparator))
-//                    .isInstanceOf(NullPointerException.class);
-//        }
-//
-//        @DisplayName("should throw NullPointerException when comparator is null")
-//        @Test
-//        void _ThrowNullPointerException_ComparatorIsNull() {
-//            // --------------------------------------------------------------------------------------------------- given
-//            final var instance = implementationInstance();
-//            final var array = new String[0];
-//            final var comparator = (Comparator<String>) null;
-//            // ----------------------------------------------------------------------------------------------- when/then
-//            assertThatThrownBy(() -> instance.sort(array, comparator))
-//                    .isInstanceOf(NullPointerException.class);
-//        }
-//
-//        @DisplayName("should invoke sort(array, 0, array.length, comparator)")
-//        @Test
-//        void _InvokeSortWithArrayAndIndices_() {
-//            // --------------------------------------------------------------------------------------------------- given
-//            final var instance = implementationSpy();
-//            doNothing()
-//                    .when(instance)
-//                    .sort(any(), anyInt(), anyInt(), any());
-//            final var array = new String[0];
-//            @SuppressWarnings({"unchecked"})
-//            final var comparator = (Comparator<? super String>) mock(Comparator.class);
-//            // ---------------------------------------------------------------------------------------------------- when
-//            instance.sort(array, comparator);
-//            // ---------------------------------------------------------------------------------------------------- then
-//            verify(instance, times(1))
-//                    .sort(array, 0, array.length, comparator);
-//        }
-//    }
-//
-//    // -----------------------------------------------------------------------------------------------------------------
-//    @DisplayName("sort(list, comparator)")
-//    @Nested
-//    class SortListWithIndicesTest {
-//
-//        private static Stream<Arguments> getListAndComparatorArgumentsStream() {
-//            return _UserTestUtils.getListAndComparatorArgumentsStream();
-//        }
-//
-//        private static Stream<Arguments> getListArgumentsStreamForTestingStability() {
-//            return _UserTestUtils.getListAndOthersArgumentsStreamForTestingStability();
-//        }
-//
-//        @DisplayName("should throw NullPointerException when list is null")
-//        @Test
-//        void _ThrowNullPointerException_ListIsNull() {
-//            // --------------------------------------------------------------------------------------------------- given
-//            final var instance = implementationInstance();
-//            final var list = (List<String>) null;
-//            final var comparator = Comparator.<String>naturalOrder();
-//            // ----------------------------------------------------------------------------------------------- when/then
-//            assertThatThrownBy(() -> instance.sort(list, comparator))
-//                    .isInstanceOf(NullPointerException.class);
-//        }
-//
-//        @DisplayName("should throw NullPointerException when comparator is null")
-//        @Test
-//        void _ThrowNullPointerException_ComparatorIsNull() {
-//            // --------------------------------------------------------------------------------------------------- given
-//            final var instance = implementationInstance();
-//            final var list = (List<String>) null;
-//            final var comparator = (Comparator<String>) null;
-//            // ----------------------------------------------------------------------------------------------- when/then
-//            assertThatThrownBy(() -> instance.sort(list, comparator))
-//                    .isInstanceOf(NullPointerException.class);
-//        }
-//
-//        @DisplayName("range should be shorted")
-//        @MethodSource({"getListAndComparatorArgumentsStream"})
-//        @ParameterizedTest
-//        void _RangeShouldBeSorted_(final List<_User> list, final Comparator<? super _User> comparator) {
-//            // --------------------------------------------------------------------------------------------------- given
-//            assert list != null;
-//            assert comparator != null;
-//            final var instance = implementationInstance();
-//            // ---------------------------------------------------------------------------------------------------- when
-//            assertThatCode(() -> instance.sort(list, comparator))
-//                    .doesNotThrowAnyException();
-//            // ---------------------------------------------------------------------------------------------------- then
-//            assertThat(list)
-//                    .isSortedAccordingTo(comparator);
-//        }
-//
-//        @DisplayName("range should be shorted stable")
-//        @MethodSource({"getListArgumentsStreamForTestingStability"})
-//        @ParameterizedTest
-//        void _RangeShouldBeSortedStable_(final List<_User> list, final Comparator<? super _User> comparator,
-//                                         final Consumer<? super InsertionSort> invoker,
-//                                         final Supplier<? extends Void> verifier) {
-//            // --------------------------------------------------------------------------------------------------- given
-//            final var instance = implementationInstance();
-//            // ---------------------------------------------------------------------------------------------------- when
-//            invoker.accept(instance);
-//            // ---------------------------------------------------------------------------------------------------- then
-//            verifier.get();
-//        }
-//    }
-//
-//    @DisplayName("sort(list)")
-//    @Nested
-//    class SortListTest {
-//
-//        private static Stream<List<_User>> getListStream() {
-//            return _UserTestUtils.getListStream();
-//        }
-//
-//        private static Stream<Arguments> getListAndComparatorArgumentsStream() {
-//            return _UserTestUtils.getListAndComparatorArgumentsStream();
-//        }
-//
-//        private static Stream<Arguments> getListStreamForTestingStability() {
-//            return _UserTestUtils.getListAndOthersArgumentsStreamForTestingStability();
-//        }
-//
-//        @DisplayName("should throw NullPointerException when list is null")
-//        @Test
-//        void _ThrowNullPointerException_ListIsNull() {
-//            // --------------------------------------------------------------------------------------------------- given
-//            final var instance = implementationInstance();
-//            final var list = (List<String>) null;
-//            final var comparator = Comparator.<String>naturalOrder();
-//            // ----------------------------------------------------------------------------------------------- when/then
-//            assertThatThrownBy(() -> instance.sort(list, comparator))
-//                    .isInstanceOf(NullPointerException.class);
-//        }
-//
-//        @DisplayName("should invoke sort(list, !null)")
-//        @Test
-//        @SuppressWarnings({"unchecked"})
-//        void _InvokeSortWithListAndComparator_() {
-//            // --------------------------------------------------------------------------------------------------- given
-//            final var instance = implementationSpy();
-//            doNothing()
-//                    .when(instance)
-//                    .sort(any(List.class), notNull(Comparator.class));
-//            final var list = new ArrayList<String>();
-//            // ---------------------------------------------------------------------------------------------------- when
-//            instance.sort(list);
-//            // ---------------------------------------------------------------------------------------------------- then
-//            verify(instance, times(1))
-//                    .sort(same(list), notNull());
-//        }
-//
-//        @DisplayName("range should be shorted")
-//        @MethodSource({"getListStream"})
-//        @ParameterizedTest
-//        void _RangeShouldBeSorted_(final List<_User> list) {
-//            // --------------------------------------------------------------------------------------------------- given
-//            final var instance = implementationInstance();
-//            // ---------------------------------------------------------------------------------------------------- when
-//            assertThatCode(() -> instance.sort(list))
-//                    .doesNotThrowAnyException();
-//            // ---------------------------------------------------------------------------------------------------- then
-//            assertThat(list)
-//                    .isSorted();
-//        }
-//
-//        @DisplayName("range should be shorted stable")
-//        @MethodSource({"getListStreamForTestingStability"})
-//        @ParameterizedTest
-//        void _RangeShouldBeSortedStable_(final List<_User> list,
-//                                         final Comparator<? super _User> comparator,
-//                                         final Consumer<? super InsertionSort> invoker,
-//                                         final Supplier<? extends Void> verifier) {
-//            // --------------------------------------------------------------------------------------------------- given
-//            final var instance = implementationInstance();
-//            // ---------------------------------------------------------------------------------------------------- when
-//            invoker.accept(instance);
-//            // ---------------------------------------------------------------------------------------------------- then
-//            verifier.get();
-//        }
-//    }
+    // ------------------------------------------------------------------------------------------ sort(list, comparator)
+    @DisplayName("sort(list, comparator")
+    @Nested
+    class SortListWithComparatorTest {
+
+        private static Stream<Arguments> getIntegerListAndComparatorArgumentsStream() {
+            return getIntArrayStream()
+                    .map(a -> IntStream.of(a).boxed().collect(Collectors.toCollection(ArrayList::new)))
+                    .flatMap(l -> Stream.of(Comparator.naturalOrder(), Comparator.naturalOrder().reversed())
+                            .map(c -> Arguments.of(l, c)));
+        }
+
+        private static Stream<Arguments> getArrayIndicesAndComparatorArgumentsStream() {
+            return _UserTestUtils.getArrayIndicesAndComparatorArgumentsStream();
+        }
+
+        @DisplayName("should throw NullPointerException when list is null")
+        @Test
+        void _ThrowNullPointerException_ListIsNull() {
+            // --------------------------------------------------------------------------------------------------- given
+            final var instance = implementationInstance();
+            final var list = (List<_User>) null;
+            final var comparator = Comparator.<_User>naturalOrder();
+            assert list == null;
+            assert comparator != null;
+            // ----------------------------------------------------------------------------------------------- when/then
+            assertThatThrownBy(() -> instance.sort(list, comparator))
+                    .isInstanceOf(NullPointerException.class);
+        }
+
+        @DisplayName("should throw NullPointerException when comparator is null")
+        @Test
+        void _ThrowNullPointerException_ComparatorIsNull() {
+            // --------------------------------------------------------------------------------------------------- given
+            final var instance = implementationInstance();
+            final var list = Collections.<_User>emptyList();
+            final var comparator = (Comparator<_User>) null;
+            assert list != null;
+            assert comparator == null;
+            // ----------------------------------------------------------------------------------------------- when/then
+            assertThatThrownBy(() -> instance.sort(list, comparator))
+                    .isInstanceOf(NullPointerException.class);
+        }
+
+        @DisplayName("should throw NullPointerException when comparator is null")
+        @Test
+        void _ThrowNullPointerException_ComparatorIsNull() {
+            // --------------------------------------------------------------------------------------------------- given
+            final var instance = implementationInstance();
+            final var list = Collections.<_User>emptyList();
+            final var comparator = (Comparator<_User>) null;
+            assert list != null;
+            assert comparator == null;
+            // ----------------------------------------------------------------------------------------------- when/then
+            assertThatThrownBy(() -> instance.sort(list, comparator))
+                    .isInstanceOf(NullPointerException.class);
+        }
+    }
+
+    // ------------------------------------------------------------------------------------------------------ sort(list)
+    @DisplayName("sort(list")
+    @Nested
+    class SortListTest {
+
+    }
 
     // --------------------------------------------------------------------------------------------- implementationClass
     final T implementationSpy() {
