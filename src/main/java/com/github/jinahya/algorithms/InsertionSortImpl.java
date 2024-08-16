@@ -26,7 +26,7 @@ class InsertionSortImpl
             );
         }
         int temp;
-        for (var i = fromIndex; i < toIndex; i++) {
+        for (var i = fromIndex; i < toIndex; i++) { // 🤨🤔
             for (var j = i; j > fromIndex && array[j - 1] > array[j]; j--) {
                 temp = array[j - 1];
                 array[j - 1] = array[j];
