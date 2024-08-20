@@ -18,7 +18,7 @@ class InsertionSortImpl
             throw new IllegalArgumentException("fromIndex(" + fromIndex + ") is greater than toIndex(" + toIndex + ")");
         }
         if (fromIndex < 0) {
-            throw new ArrayIndexOutOfBoundsException("fromIndex(" + fromIndex + ") is less than or equal to 0");
+            throw new ArrayIndexOutOfBoundsException("fromIndex(" + fromIndex + ") is less than 0");
         }
         if (toIndex > array.length) {
             throw new ArrayIndexOutOfBoundsException(
@@ -37,7 +37,7 @@ class InsertionSortImpl
 
     @Override
     public void sort(final long[] array, final int fromIndex, final int toIndex) {
-        // TODO: implement
+        throw new UnsupportedOperationException("not implemented yet"); // TODO: implement
     }
 
     // -----------------------------------------------------------------------------------------------------------------
@@ -45,12 +45,12 @@ class InsertionSortImpl
     public <T> void sort(final List<T> list, final Comparator<? super T> comparator) {
         Objects.requireNonNull(list, "list is null");
         Objects.requireNonNull(comparator, "comparator is null");
-        // TODO: implement
+        throw new UnsupportedOperationException("not implemented yet"); // TODO: implement
     }
 
     @Override
     public <T extends Comparable<? super T>> void sort(final List<T> list) {
         Objects.requireNonNull(list, "list is null");
-        // TODO: implement
+        throw new UnsupportedOperationException("not implemented yet"); // TODO: implement
     }
 }

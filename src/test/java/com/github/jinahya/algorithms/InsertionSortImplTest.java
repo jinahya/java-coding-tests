@@ -4,6 +4,8 @@ import com.github.jinahya._Impl;
 
 /**
  * A class for testing {@link InsertionSortImpl} class.
+ *
+ * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  */
 @_Impl
 class InsertionSortImplTest

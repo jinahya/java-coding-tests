@@ -114,7 +114,13 @@ abstract class InsertionSortTest<T extends InsertionSort> {
     }
 
     // ------------------------------------------------------------------------------------------- sort(int[], int, int)
-    @DisplayName("sort(int[], int, int")
+
+    /**
+     * A nested class for testing {@link InsertionSort#sort(int[], int, int)} method.
+     *
+     * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
+     */
+    @DisplayName("sort(int[], int, int)")
     @Nested
     class SortIntArrayWithIndicesTest {
 
@@ -259,7 +265,13 @@ abstract class InsertionSortTest<T extends InsertionSort> {
     }
 
     // ------------------------------------------------------------------------------------------ sort(long[], int, int)
-    @DisplayName("sort(long[], int, int")
+
+    /**
+     * A nested class for testing {@link InsertionSort#sort(long[], int, int)} method.
+     *
+     * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
+     */
+    @DisplayName("sort(long[], int, int)")
     @Nested
     class SortLongArrayWithIndicesTest {
 
@@ -399,8 +411,14 @@ abstract class InsertionSortTest<T extends InsertionSort> {
         }
     }
 
-    // -----------------------------------------------------------------------------------------------------------------
-    @DisplayName("sort(array, fromIndex, toIndex, comparator)")
+    // ------------------------------------------------------------------------------------ sort(Comparable[], int, int)
+
+    /**
+     * A nested test class for testing {@link InsertionSort#sort(Comparable[], int, int)} method.
+     *
+     * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
+     */
+    @DisplayName("sort(Comparable[], int, int)")
     @Nested
     class SortObjectArrayWithIndicesAndComparatorTest {
 
@@ -600,7 +618,13 @@ abstract class InsertionSortTest<T extends InsertionSort> {
     }
 
     // ------------------------------------------------------------------------------------------ sort(list, comparator)
-    @DisplayName("sort(list, comparator")
+
+    /**
+     * A nested class for testing {@link InsertionSort#sort(List, Comparator)} method.
+     *
+     * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
+     */
+    @DisplayName("sort(list, comparator)")
     @Nested
     class SortListWithComparatorTest {
 
@@ -645,7 +669,7 @@ abstract class InsertionSortTest<T extends InsertionSort> {
 
         @DisplayName("should throw NullPointerException when comparator is null")
         @Test
-        void _ThrowNullPointerException_ComparatorIsNull() {
+        void _ThrowNullPointerException_ComparatorIsNullx() {
             // --------------------------------------------------------------------------------------------------- given
             final var instance = implementationInstance();
             final var list = Collections.<_User>emptyList();
@@ -659,6 +683,12 @@ abstract class InsertionSortTest<T extends InsertionSort> {
     }
 
     // ------------------------------------------------------------------------------------------------------ sort(list)
+
+    /**
+     * A nested class for testing {@link InsertionSort#sort(List)} method.
+     *
+     * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
+     */
     @DisplayName("sort(list")
     @Nested
     class SortListTest {
