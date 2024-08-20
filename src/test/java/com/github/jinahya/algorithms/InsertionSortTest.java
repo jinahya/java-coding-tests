@@ -667,18 +667,18 @@ abstract class InsertionSortTest<T extends InsertionSort> {
                     .isInstanceOf(NullPointerException.class);
         }
 
-        @DisplayName("should throw NullPointerException when comparator is null")
-        @Test
-        void _ThrowNullPointerException_ComparatorIsNullx() {
-            // --------------------------------------------------------------------------------------------------- given
-            final var instance = implementationInstance();
-            final var list = Collections.<_User>emptyList();
-            final var comparator = (Comparator<_User>) null;
+        @DisplayName("should sort given list according to comparator")
+        @MethodSource({"getIntegerListAndComparatorArgumentsStream"})
+        @ParameterizedTest
+        void _ShouldSortAccordingToComparator_Integer(final List<Integer> list,
+                                                      final Comparator<? super Integer> comparator) {
             assert list != null;
-            assert comparator == null;
-            // ----------------------------------------------------------------------------------------------- when/then
-            assertThatThrownBy(() -> instance.sort(list, comparator))
-                    .isInstanceOf(NullPointerException.class);
+            assert comparator != null;
+            final var instance = implementationInstance();
+            // ---------------------------------------------------------------------------------------------------- when
+            instance.sort(list, comparator);
+            // ---------------------------------------------------------------------------------------------------- then
+            assertThat(list).isSortedAccordingTo(comparator);
         }
     }
 
