@@ -635,7 +635,7 @@ abstract class InsertionSortTest<T extends InsertionSort> {
                             .map(c -> Arguments.of(l, c)));
         }
 
-        private static Stream<Arguments> getArrayIndicesAndComparatorArgumentsStream() {
+        private static Stream<Arguments> getUserListAnddComparatorArgumentsStream() {
             return _UserTestUtils.getArrayIndicesAndComparatorArgumentsStream();
         }
 
@@ -667,7 +667,7 @@ abstract class InsertionSortTest<T extends InsertionSort> {
                     .isInstanceOf(NullPointerException.class);
         }
 
-        @DisplayName("should sort given list according to comparator")
+        @DisplayName("should sort given list according to specified comparator")
         @MethodSource({"getIntegerListAndComparatorArgumentsStream"})
         @ParameterizedTest
         void _ShouldSortAccordingToComparator_Integer(final List<Integer> list,
@@ -679,6 +679,42 @@ abstract class InsertionSortTest<T extends InsertionSort> {
             instance.sort(list, comparator);
             // ---------------------------------------------------------------------------------------------------- then
             assertThat(list).isSortedAccordingTo(comparator);
+        }
+
+        @DisplayName("should sort given list according to specified comparator")
+        @Test
+        void _ShouldSortAccordingToComparator_User1() {
+            final var instance = implementationInstance();
+            @SuppressWarnings({"java:S6204"})
+            final var list = IntStream.range(0, 8)
+                    .mapToObj(i -> new _User(i, "fixed", 0))
+                    .collect(Collectors.toList());
+            final var size = list.size();
+            final var comparator = _User.COMPARING_ID;
+            // ---------------------------------------------------------------------------------------------------- when
+            instance.sort(list, comparator);
+            // ---------------------------------------------------------------------------------------------------- then
+            assertThat(list).isSortedAccordingTo(comparator).hasSize(size);
+            assertThat(list).extracting(_User::id).isSorted();
+            assertThat(list).extracting(_User::age).containsOnly(0);
+        }
+
+        @DisplayName("should sort given list according to specified comparator")
+        @Test
+        void _ShouldSortAccordingToComparator_User2() {
+            final var instance = implementationInstance();
+            @SuppressWarnings({"java:S6204"})
+            final var list = IntStream.range(0, 8)
+                    .mapToObj(i -> new _User(i, "fixed", 0))
+                    .collect(Collectors.toList());
+            final var size = list.size();
+            final var comparator = _User.COMPARING_ID.reversed();
+            // ---------------------------------------------------------------------------------------------------- when
+            instance.sort(list, comparator);
+            // ---------------------------------------------------------------------------------------------------- then
+            assertThat(list).isSortedAccordingTo(comparator).hasSize(size);
+            assertThat(list).extracting(_User::id).isSortedAccordingTo(Comparator.reverseOrder());
+            assertThat(list).extracting(_User::age).containsOnly(0);
         }
     }
 

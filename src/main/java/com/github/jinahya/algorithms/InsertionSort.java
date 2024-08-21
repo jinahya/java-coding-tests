@@ -8,7 +8,8 @@ import java.util.List;
 import java.util.Objects;
 
 /**
- * An interface for insertion-sort.
+ * An interface for sorting arrays and lists using <a href="https://en.wikipedia.org/wiki/Insertion_sort">Insertion
+ * sort</a>.
  *
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
@@ -17,7 +18,7 @@ import java.util.Objects;
  * @see <a href="https://en.wikipedia.org/wiki/Sorting_algorithm#Stability">Stability</a> (wikipedia / Sorting
  * algorithm)
  */
-interface InsertionSort {
+public interface InsertionSort {
 
     /**
      * Sorts the specified range of the array into ascending order.
