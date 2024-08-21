@@ -8,16 +8,19 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
+import org.mockito.ArgumentCaptor;
 
 import java.util.*;
 import java.util.concurrent.ThreadLocalRandom;
+import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import java.util.stream.LongStream;
 import java.util.stream.Stream;
 
 import static org.assertj.core.api.Assertions.*;
-import static org.mockito.Mockito.spy;
+import static org.mockito.ArgumentMatchers.same;
+import static org.mockito.Mockito.*;
 
 /**
  * An abstract class for testing classes implement {@link InsertionSort} interface.
@@ -635,8 +638,11 @@ abstract class InsertionSortTest<T extends InsertionSort> {
                             .map(c -> Arguments.of(l, c)));
         }
 
-        private static Stream<Arguments> getUserListAnddComparatorArgumentsStream() {
-            return _UserTestUtils.getArrayIndicesAndComparatorArgumentsStream();
+        private static Stream<Arguments> getLongListAndComparatorArgumentsStream() {
+            return getLongArrayStream()
+                    .map(a -> LongStream.of(a).boxed().collect(Collectors.toCollection(ArrayList::new)))
+                    .flatMap(l -> Stream.of(Comparator.naturalOrder(), Comparator.naturalOrder().reversed())
+                            .map(c -> Arguments.of(l, c)));
         }
 
         @DisplayName("should throw NullPointerException when list is null")
@@ -682,6 +688,19 @@ abstract class InsertionSortTest<T extends InsertionSort> {
         }
 
         @DisplayName("should sort given list according to specified comparator")
+        @MethodSource({"getLongListAndComparatorArgumentsStream"})
+        @ParameterizedTest
+        void _ShouldSortAccordingToComparator_Long(final List<Long> list, final Comparator<? super Long> comparator) {
+            assert list != null;
+            assert comparator != null;
+            final var instance = implementationInstance();
+            // ---------------------------------------------------------------------------------------------------- when
+            instance.sort(list, comparator);
+            // ---------------------------------------------------------------------------------------------------- then
+            assertThat(list).isSortedAccordingTo(comparator);
+        }
+
+        @DisplayName("should sort given list according to specified comparator")
         @Test
         void _ShouldSortAccordingToComparator_User1() {
             final var instance = implementationInstance();
@@ -692,11 +711,17 @@ abstract class InsertionSortTest<T extends InsertionSort> {
             final var size = list.size();
             final var comparator = _User.COMPARING_ID;
             // ---------------------------------------------------------------------------------------------------- when
-            instance.sort(list, comparator);
+            assertThatCode(() -> instance.sort(list, comparator))
+                    .doesNotThrowAnyException();
             // ---------------------------------------------------------------------------------------------------- then
-            assertThat(list).isSortedAccordingTo(comparator).hasSize(size);
-            assertThat(list).extracting(_User::id).isSorted();
-            assertThat(list).extracting(_User::age).containsOnly(0);
+            assertThat(list)
+                    .isSortedAccordingTo(comparator)
+                    .hasSize(size);
+            assertThat(list)
+                    .extracting(_User::id).isSorted();
+            assertThat(list)
+                    .extracting(_User::age)
+                    .containsOnly(0);
         }
 
         @DisplayName("should sort given list according to specified comparator")
@@ -710,11 +735,17 @@ abstract class InsertionSortTest<T extends InsertionSort> {
             final var size = list.size();
             final var comparator = _User.COMPARING_ID.reversed();
             // ---------------------------------------------------------------------------------------------------- when
-            instance.sort(list, comparator);
+            assertThatCode(() -> instance.sort(list, comparator))
+                    .doesNotThrowAnyException();
             // ---------------------------------------------------------------------------------------------------- then
-            assertThat(list).isSortedAccordingTo(comparator).hasSize(size);
-            assertThat(list).extracting(_User::id).isSortedAccordingTo(Comparator.reverseOrder());
-            assertThat(list).extracting(_User::age).containsOnly(0);
+            assertThat(list)
+                    .isSortedAccordingTo(comparator)
+                    .hasSize(size);
+            assertThat(list).extracting(_User::id)
+                    .isSortedAccordingTo(Comparator.reverseOrder());
+            assertThat(list)
+                    .extracting(_User::age)
+                    .containsOnly(0);
         }
     }
 
@@ -729,6 +760,47 @@ abstract class InsertionSortTest<T extends InsertionSort> {
     @Nested
     class SortListTest {
 
+        @DisplayName("should throw NullPointerException when list is null")
+        @Test
+        void _ThrowNullPointerException_ListIsNull() {
+            // --------------------------------------------------------------------------------------------------- given
+            final var instance = implementationInstance();
+            final var list = (List<_User>) null;
+            assert list == null;
+            // ----------------------------------------------------------------------------------------------- when/then
+            assertThatThrownBy(() -> instance.sort(list))
+                    .as("thrown by sort(null)")
+                    .isInstanceOf(NullPointerException.class);
+        }
+
+        @DisplayName("should invoke sort(list, Comparator.naturalOrder()")
+        @Test
+        @SuppressWarnings({"unchecked"})
+        void _InvokeSortWithListAndNaturalOrder_() {
+            // --------------------------------------------------------------------------------------------------- given
+            final var instance = implementationSpy();
+            final var list = new ArrayList<_User>();
+            assert list != null;
+            // ---------------------------------------------------------------------------------------------------- when
+            final var reference = new AtomicReference<Object>();
+            try (final var comparatorStatic = mockStatic(Comparator.class, i -> {
+                final var result = i.callRealMethod();
+                if (i.getMethod().equals(Comparator.class.getMethod("naturalOrder"))) {
+                    reference.set(result);
+                }
+                return result;
+            })) {
+                assertThatCode(() -> instance.sort(list))
+                        .doesNotThrowAnyException();
+                // ------------------------------------------------------------------------------------------------ then
+                // should invoke naturalOrder(), once and only.
+                comparatorStatic.verify(Comparator::naturalOrder, times(1));
+                final var captor = ArgumentCaptor.forClass(Comparator.class);
+                // should invoke sort(list, naturalOrder()), once and only.
+                verify(instance, times(1)).sort(same(list), captor.capture());
+                assertThat(captor.getValue()).isSameAs(reference.get());
+            }
+        }
     }
 
     // --------------------------------------------------------------------------------------------- implementationClass

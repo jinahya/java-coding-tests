@@ -124,7 +124,8 @@ public interface InsertionSort {
     <T> void sort(@NotNull List<T> list, @NotNull Comparator<? super T> comparator);
 
     /**
-     * Sorts the specified list into ascending order, according to the natural ordering of its elements.
+     * Sorts the specified list into ascending order, according to the
+     * {@link Comparator#naturalOrder() natural ordering} of its elements.
      *
      * @param list the list to be sorted.
      * @param <T>  the class of the objects in the list.

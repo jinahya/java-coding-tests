@@ -47,22 +47,19 @@ public final class FibonacciSequence {
         if (requirePositiveOrZero(n) > MAX_N) {
             throw new IllegalArgumentException("n(" + n + ") is greater than " + MAX_N);
         }
-        // TODO: implement!
-        throw new UnsupportedOperationException("not implemented yet");
+        throw new UnsupportedOperationException("not implemented yet"); // TODO: implement!
     }
 
     public static @PositiveOrZero long getFibonacciNumberLong(final @Max(MAX_N_LONG) @PositiveOrZero int n) {
         if (requirePositiveOrZero(n) > MAX_N_LONG) {
             throw new IllegalArgumentException("n(" + n + ") is greater than " + MAX_N_LONG);
         }
-        // TODO: implement!
-        throw new UnsupportedOperationException("not implemented yet");
+        throw new UnsupportedOperationException("not implemented yet"); // TODO: implement!
     }
 
     public static BigInteger getFibonacciNumberBig(final @PositiveOrZero int n) {
         requirePositiveOrZero(n);
-        // TODO: implement!
-        throw new UnsupportedOperationException("not implemented yet");
+        throw new UnsupportedOperationException("not implemented yet"); // TODO: implement!
     }
 
     // -----------------------------------------------------------------------------------------------------------------
